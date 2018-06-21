@@ -97,11 +97,11 @@ trait ApiTrait
 
     /**
      * 成功返回
-     * @param        $content
+     * @param array  $content
      * @param string $msg
      * @return \Illuminate\Http\JsonResponse
      */
-    public function responseSuccess($content, $msg = 'ok')
+    public function responseSuccess($content = [], $msg = 'ok')
     {
         return $this->setState(true)->setResponse(0, $msg)->response($content);
     }
