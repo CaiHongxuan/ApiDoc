@@ -19,10 +19,24 @@ $router->group([], function () use ($router) {
     $router->get('test', ['as' => 'index', 'uses' => 'HomeController@index']);
 });
 
-$router->group(['namespace' => 'Doc', 'as' => 'docs.', 'prefix' => 'docs'], function () use ($router) {
-    $router->get('/', ['as' => 'index', 'uses' => 'DocController@index']);
-    $router->post('/', ['as' => 'store', 'uses' => 'DocController@store']);
-    $router->get('{id}', ['as' => 'show', 'uses' => 'DocController@show']);
-    $router->put('{id}', ['as' => 'update', 'uses' => 'DocController@update']);
-    $router->delete('{id}', ['as' => 'destroy', 'uses' => 'DocController@destroy']);
+$router->group(['namespace' => 'V1', 'prefix' => 'v1', 'as' => 'v1.'], function () use ($router) {
+
+    // 项目管理
+    $router->group(['as' => 'projects.', 'prefix' => 'projects'], function () use ($router) {
+        $router->get('/', ['as' => 'index', 'uses' => 'ProjectController@index']);
+        $router->post('/', ['as' => 'store', 'uses' => 'ProjectController@store']);
+        $router->get('{id}', ['as' => 'show', 'uses' => 'ProjectController@show']);
+        $router->put('{id}', ['as' => 'update', 'uses' => 'ProjectController@update']);
+        $router->delete('{id}', ['as' => 'destroy', 'uses' => 'ProjectController@destroy']);
+    });
+
+    // 文章管理
+    $router->group(['as' => 'docs.', 'prefix' => 'docs'], function () use ($router) {
+        $router->get('/', ['as' => 'index', 'uses' => 'DocController@index']);
+        $router->post('/', ['as' => 'store', 'uses' => 'DocController@store']);
+        $router->get('{id}', ['as' => 'show', 'uses' => 'DocController@show']);
+        $router->put('{id}', ['as' => 'update', 'uses' => 'DocController@update']);
+        $router->delete('{id}', ['as' => 'destroy', 'uses' => 'DocController@destroy']);
+    });
+
 });

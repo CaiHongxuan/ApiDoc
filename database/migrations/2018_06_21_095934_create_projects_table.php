@@ -19,6 +19,7 @@ class CreateProjectsTable extends Migration
             $table->string('name', 32)->comment('项目名称');
             $table->string('desc', 128)->default('')->comment('项目简介');
             $table->string('icon', 32)->default('')->comment('项目显示图片');
+            $table->unsignedInteger('created_by')->default(0)->comment('创建者');
             $table->timestamps();
         });
     }

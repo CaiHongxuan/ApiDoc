@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Model\Project;
 use Illuminate\Auth\Authenticatable;
 use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
@@ -29,4 +30,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $hidden = [
         'password',
     ];
+
+    /**
+     * 拥有的项目
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function projects()
+    {
+        return $this->hasMany(Project::class, 'created_by', 'id');
+    }
 }
