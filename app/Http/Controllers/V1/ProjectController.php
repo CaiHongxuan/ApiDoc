@@ -44,11 +44,10 @@ class ProjectController extends ApiController
     {
         $validate = Validator::make($request->all(), [
             'name' => 'required',
-            'desc' => 'required',
-            'icon' => 'string'
+            'desc' => 'required'
         ], [
             'name.required' => '项目标题必填',
-            'desc.required' => '项目简介必填',
+            'desc.required' => '项目简介必填'
         ], []);
         if ($validate->fails()) {
             return $this->responseError(ApiCode::LACK_OF_PARAMETERS, $validate->errors()->first());
@@ -75,7 +74,7 @@ class ProjectController extends ApiController
             ->select(['id', 'name', 'desc', 'icon', 'created_at', 'updated_at'])
             ->find($id);
         if (!$project) {
-            return $this->responseError(ApiCode::NOT_FOUND_OF_PROJECT, '项目不存在');
+            return $this->responseError(ApiCode::NOT_FOUND_OF_PROJECT);
         }
 
         return $this->responseSuccess($project->toArray());
@@ -90,22 +89,21 @@ class ProjectController extends ApiController
     public function update(Request $request, $id)
     {
         if (!$this->project->find($id)) {
-            return $this->responseError(ApiCode::NOT_FOUND_OF_PROJECT, '项目不存在');
+            return $this->responseError(ApiCode::NOT_FOUND_OF_PROJECT);
         }
 
         $validate = Validator::make($request->all(), [
             'name' => 'required',
-            'desc' => 'required',
-            'icon' => 'string'
+            'desc' => 'required'
         ], [
             'name.required' => '项目标题必填',
-            'desc.required' => '项目简介必填',
+            'desc.required' => '项目简介必填'
         ], []);
         if ($validate->fails()) {
             return $this->responseError(ApiCode::NOT_FOUND_OF_PROJECT, $validate->errors()->first());
         }
 
-        $this->project->update(['id' => $id], $request->only(['name', 'desc', 'icon']));
+        $this->project->where(['id' => $id])->update($request->only(['name', 'desc', 'icon']));
 
         return $this->responseSuccess();
     }
@@ -118,7 +116,7 @@ class ProjectController extends ApiController
     public function destroy($id)
     {
         if (!$this->project->find($id)) {
-            return $this->responseError(ApiCode::NOT_FOUND_OF_PROJECT, '项目不存在');
+            return $this->responseError(ApiCode::NOT_FOUND_OF_PROJECT);
         }
 
         $this->project->where('id', $id)->delete();
