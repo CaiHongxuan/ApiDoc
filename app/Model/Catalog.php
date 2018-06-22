@@ -27,4 +27,13 @@ class Catalog extends Model
         return $this->hasMany(Document::class, 'cat_id', 'id');
     }
 
+    /**
+     * 所属项目
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function pro()
+    {
+        return $this->belongsTo(Project::class, 'pro_id', 'id');
+    }
+
 }
