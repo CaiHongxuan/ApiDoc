@@ -18,4 +18,13 @@ class Catalog extends Model
         'name', 'parent_id', 'pro_id'
     ];
 
+    /**
+     * 该目录下的文档
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function docs()
+    {
+        return $this->hasMany(Document::class, 'cat_id', 'id');
+    }
+
 }

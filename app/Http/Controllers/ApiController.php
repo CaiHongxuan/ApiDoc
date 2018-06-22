@@ -15,4 +15,5 @@ class ApiController extends Controller
 {
     use ApiTrait;
 
+    protected $pageNum = 15;
 }

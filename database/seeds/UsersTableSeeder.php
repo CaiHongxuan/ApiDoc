@@ -25,6 +25,24 @@ class UsersTableSeeder extends Seeder
                             'desc' => '为方便团队间的协作以及后续维护，本文档制定了一系列的开发规范，望各位遵守！',
                             'icon' => ''
                         ]
+                    ))
+                    ->cats()
+                    ->save(factory(\App\Model\Catalog::class)->make(
+                        [
+                            'name'      => '编码规范',
+                            'parent_id' => 0
+                        ]
+                    ))
+                    ->docs()
+                    ->save(factory(\App\Model\Document::class)->make(
+                        [
+                            'title'      => '后端开发规范',
+                            'type'       => 1,
+                            'status'     => 0,
+                            'version'    => '1',
+                            'content'    => '这是正文',
+                            'created_by' => $u->id,
+                        ]
                     ));
             });
     }

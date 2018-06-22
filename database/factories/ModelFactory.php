@@ -21,3 +21,11 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 $factory->define(\App\Model\Project::class, function (Faker\Generator $faker) {
     return [];
 });
+
+$factory->define(\App\Model\Catalog::class, function (Faker\Generator $faker) {
+    return [];
+});
+
+$factory->define(\App\Model\Document::class, function (Faker\Generator $faker) {
+    return [];
+});

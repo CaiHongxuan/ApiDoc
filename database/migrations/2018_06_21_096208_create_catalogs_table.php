@@ -14,7 +14,7 @@ class CreateCatalogsTable extends Migration
     public function up()
     {
         Schema::create('catalogs', function (Blueprint $table) {
-            $table->comment = '文章所属目录表';
+            $table->comment = '文档所属目录表';
             $table->increments('id');
             $table->string('name', 64)->comment('目录名称');
             $table->unsignedInteger('parent_id')->default(0)->comment('上级目录');

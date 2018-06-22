@@ -14,15 +14,18 @@ class CreateDocumentsTable extends Migration
     public function up()
     {
         Schema::create('documents', function (Blueprint $table) {
-            $table->comment = '文章表';
+            $table->comment = '文档表';
             $table->increments('id');
-            $table->string('title', 64)->comment('文章标题');
+            $table->string('title', 64)->comment('文档标题');
+            $table->tinyInteger('type')->default(1)->comment('文档类型。1接口文档，2普通文档');
             $table->string('url')->default('')->comment('接口地址');
             $table->tinyInteger('method')->default(0)->comment('请求方式');
+            $table->tinyInteger('status')->default(0)->comment('开发状态');
+            $table->string('version', 16)->default('1')->comment('版本');
             $table->text('arguments')->default('')->comment('参数及其说明json格式');
-            $table->text('content')->default('')->comment('文章内容');
-            $table->unsignedInteger('created_by')->default(0)->comment('文章创建者');
-            $table->unsignedInteger('updated_by')->default(0)->comment('文章修改者');
+            $table->text('content')->default('')->comment('文档内容');
+            $table->unsignedInteger('created_by')->default(0)->comment('文档创建者');
+            $table->unsignedInteger('updated_by')->default(0)->comment('文档修改者');
             $table->unsignedInteger('cat_id')->comment('所属目录id');
             $table->index('created_by');
             $table->index('updated_by');

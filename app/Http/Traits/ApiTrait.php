@@ -9,6 +9,8 @@
 namespace App\Http\Traits;
 
 
+use App\Lib\Code\ApiCode;
+
 trait ApiTrait
 {
     protected $errorCode = 0;
@@ -47,7 +49,7 @@ trait ApiTrait
      */
     public function setResMsg($resMsg)
     {
-        $this->resMsg = $resMsg;
+        $this->resMsg = $resMsg ? : (self::getErrorCode() > 0 ? ApiCode::$msg[self::getErrorCode()] : '');
         return $this;
     }
 
