@@ -47,6 +47,8 @@ class CatController extends ApiController
             ])
             ->toArray();
 
+        $catalogs = list_to_tree($catalogs);
+
         return $this->responseSuccess($catalogs);
     }
 
@@ -59,7 +61,7 @@ class CatController extends ApiController
     {
         $validate = Validator::make($request->all(), [
             'name'      => 'required',
-            'parent_id' => 'required|exists:catalogs,id',
+            'parent_id' => 'required' . ($request->input('parent_id', 0) ? '|exists:catalogs,id' : ''),
             'pro_id'    => 'required|exists:projects,id',
         ], [
             'name.required'      => '目录名称必填',
@@ -107,7 +109,7 @@ class CatController extends ApiController
 
         $validate = Validator::make($request->all(), [
             'name'      => 'required',
-            'parent_id' => 'required|exists:catalogs,id',
+            'parent_id' => 'required' . ($request->input('parent_id', 0) ? '|exists:catalogs,id' : ''),
             'pro_id'    => 'required|exists:projects,id',
         ], [
             'name.required'      => '目录名称必填',

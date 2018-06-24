@@ -30,6 +30,15 @@ $router->group(['namespace' => 'V1', 'prefix' => 'v1', 'as' => 'v1.'], function 
         $router->delete('{id}', ['as' => 'destroy', 'uses' => 'ProjectController@destroy']);
     });
 
+    // 目录管理
+    $router->group(['as' => 'catalogs.', 'prefix' => 'catalogs'], function () use ($router) {
+        $router->get('/', ['as' => 'index', 'uses' => 'CatController@index']);
+        $router->post('/', ['as' => 'store', 'uses' => 'CatController@store']);
+        $router->get('{id}', ['as' => 'show', 'uses' => 'CatController@show']);
+        $router->put('{id}', ['as' => 'update', 'uses' => 'CatController@update']);
+        $router->delete('{id}', ['as' => 'destroy', 'uses' => 'CatController@destroy']);
+    });
+
     // 文章管理
     $router->group(['as' => 'docs.', 'prefix' => 'docs'], function () use ($router) {
         $router->get('/', ['as' => 'index', 'uses' => 'DocController@index']);
