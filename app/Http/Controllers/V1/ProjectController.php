@@ -30,7 +30,7 @@ class ProjectController extends ApiController
      */
     public function index()
     {
-        $projects = $this->project->orderBy('updated_at', 'DESC')->orderBy('id', 'DESC')->paginate($this->pageNum);
+        $projects = $this->project->orderBy('sort', 'ASC')->orderBy('updated_at', 'DESC')->orderBy('id', 'DESC')->paginate($this->pageNum);
 
         return $this->responseSuccess($projects);
     }

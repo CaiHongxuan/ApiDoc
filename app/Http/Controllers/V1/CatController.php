@@ -40,6 +40,7 @@ class CatController extends ApiController
 
         $catalogs = $this->catalog
             ->where($where)
+            ->orderBy('sort', 'ASC')
             ->orderBy('updated_at', 'DESC')
             ->orderBy('id', 'DESC')
             ->get([

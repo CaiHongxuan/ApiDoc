@@ -43,6 +43,7 @@ class DocController extends ApiController
             ->with(['created_by' => function ($q) {
                 $q->select('id', 'name');
             }])
+            ->orderBy('sort', 'ASC')
             ->orderBy('updated_at', 'DESC')
             ->orderBy('id', 'DESC')
             ->get([
