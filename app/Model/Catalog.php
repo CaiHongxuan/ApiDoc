@@ -15,7 +15,7 @@ class Catalog extends Model
 {
 
     protected $fillable = [
-        'name', 'parent_id', 'pro_id'
+        'name', 'parent_id', 'pro_id', 'sort'
     ];
 
     /**

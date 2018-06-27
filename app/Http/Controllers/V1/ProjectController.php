@@ -44,10 +44,12 @@ class ProjectController extends ApiController
     {
         $validate = Validator::make($request->all(), [
             'name' => 'required',
-            'desc' => 'required'
+            'desc' => 'required',
+            'sort' => 'integer'
         ], [
             'name.required' => '项目标题必填',
-            'desc.required' => '项目简介必填'
+            'desc.required' => '项目简介必填',
+            'sort.integer'  => '序号必须为整型'
         ], []);
         if ($validate->fails()) {
             return $this->responseError(ApiCode::LACK_OF_PARAMETERS, $validate->errors()->first());
@@ -94,10 +96,12 @@ class ProjectController extends ApiController
 
         $validate = Validator::make($request->all(), [
             'name' => 'required',
-            'desc' => 'required'
+            'desc' => 'required',
+            'sort' => 'integer'
         ], [
             'name.required' => '项目标题必填',
-            'desc.required' => '项目简介必填'
+            'desc.required' => '项目简介必填',
+            'sort.integer'  => '序号必须为整型'
         ], []);
         if ($validate->fails()) {
             return $this->responseError(ApiCode::NOT_FOUND_OF_PROJECT, $validate->errors()->first());

@@ -64,12 +64,14 @@ class CatController extends ApiController
             'name'      => 'required',
             'parent_id' => 'required' . ($request->input('parent_id', 0) ? '|exists:catalogs,id' : ''),
             'pro_id'    => 'required|exists:projects,id',
+            'sort'      => 'integer'
         ], [
             'name.required'      => '目录名称必填',
             'parent_id.required' => '上级目录必填',
             'parent_id.exists'   => '目录所属上级目录不存在',
             'pro_id.required'    => '目录所属项目必填',
             'pro_id.exists'      => '目录所属项目不存在',
+            'sort.integer'       => '序号必须为整型'
         ], []);
         if ($validate->fails()) {
             return $this->responseError(ApiCode::LACK_OF_PARAMETERS, $validate->errors()->first());
@@ -112,12 +114,14 @@ class CatController extends ApiController
             'name'      => 'required',
             'parent_id' => 'required' . ($request->input('parent_id', 0) ? '|exists:catalogs,id' : ''),
             'pro_id'    => 'required|exists:projects,id',
+            'sort'      => 'integer'
         ], [
             'name.required'      => '目录名称必填',
             'parent_id.required' => '上级目录必填',
             'parent_id.exists'   => '目录所属上级目录不存在',
             'pro_id.required'    => '目录所属项目必填',
             'pro_id.exists'      => '目录所属项目不存在',
+            'sort.integer'       => '序号必须为整型'
         ], []);
         if ($validate->fails()) {
             return $this->responseError(ApiCode::LACK_OF_PARAMETERS, $validate->errors()->first());

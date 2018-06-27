@@ -16,7 +16,7 @@ class Project extends Model
 {
 
     protected $fillable = [
-        'name', 'desc', 'icon', 'created_by'
+        'name', 'desc', 'icon', 'created_by', 'sort'
     ];
 
     /**
