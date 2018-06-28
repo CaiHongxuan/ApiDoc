@@ -42,6 +42,7 @@ class UsersTableSeeder extends Seeder
                             'version'    => '1',
                             'content'    => '这是正文',
                             'created_by' => $u->id,
+                            'updated_by' => $u->id,
                         ]
                     ));
             });

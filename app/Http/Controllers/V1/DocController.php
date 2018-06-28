@@ -42,14 +42,16 @@ class DocController extends ApiController
             ->where($where)
             ->with(['created_by' => function ($q) {
                 $q->select('id', 'name');
+            }, 'updated_by'      => function ($q) {
+                $q->select('id', 'name');
             }])
             ->orderBy('sort', 'ASC')
             ->orderBy('updated_at', 'DESC')
             ->orderBy('id', 'DESC')
-            ->get([
-                'id', 'title', 'type', 'url', 'method', 'status', 'version', 'arguments', 'content', 'created_by', 'updated_by', 'cat_id', 'created_at', 'updated_at'
-            ])
-            ->toArray();
+            ->select(
+                'id', 'title', 'created_by', 'updated_by', 'created_at', 'updated_at'
+            )
+            ->paginate($this->pageNum);
 
         return $this->responseSuccess($documents);
     }
@@ -84,17 +86,18 @@ class DocController extends ApiController
             return $this->responseError(ApiCode::LACK_OF_PARAMETERS, $validate->errors()->first());
         }
 
-        $this->document->create(
+        $doc = $this->document->create(
             array_merge(
                 $request->only(['title', 'type', 'method', 'arguments', 'content', 'cat_id']),
                 [
                     'version'    => 1,
-                    'created_by' => 1
+                    'created_by' => 1,
+                    'updated_by' => 1
                 ]
             )
         );
 
-        return $this->responseSuccess();
+        return $this->responseSuccess($doc);
     }
 
     /**

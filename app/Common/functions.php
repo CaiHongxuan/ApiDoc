@@ -24,6 +24,9 @@ if (!function_exists('list_to_tree')) {
             if ($value[$parent_id] == $id) {
                 unset($lists[$key]);
                 $value[$children] = list_to_tree($lists, $value[$key_id], $key_id, $parent_id, $children);
+                if (!$value[$children]) {
+                    unset($value[$children]);
+                }
                 $results[] = $value;
             }
         }

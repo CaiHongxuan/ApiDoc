@@ -55,14 +55,14 @@ class ProjectController extends ApiController
             return $this->responseError(ApiCode::LACK_OF_PARAMETERS, $validate->errors()->first());
         }
 
-        $this->project->create(
+        $project = $this->project->create(
             array_merge(
                 $request->only(['name', 'desc', 'icon']),
                 ['created_by' => 1]
             )
         );
 
-        return $this->responseSuccess();
+        return $this->responseSuccess($project);
     }
 
     /**
