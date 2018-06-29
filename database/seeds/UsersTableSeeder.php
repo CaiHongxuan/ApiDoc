@@ -29,8 +29,9 @@ class UsersTableSeeder extends Seeder
                     ->cats()
                     ->save(factory(\App\Model\Catalog::class)->make(
                         [
-                            'name'      => '编码规范',
-                            'parent_id' => 0
+                            'name'       => '编码规范',
+                            'parent_id'  => 0,
+                            'parent_ids' => 0,
                         ]
                     ))
                     ->docs()
@@ -43,6 +44,7 @@ class UsersTableSeeder extends Seeder
                             'content'    => '这是正文',
                             'created_by' => $u->id,
                             'updated_by' => $u->id,
+                            'cat_ids'    => 1
                         ]
                     ));
             });

@@ -29,6 +29,29 @@ class Document extends Model
     ];
 
     /**
+     * 是否必填
+     */
+    const NO_MUST = 0; // 非必填
+    const IS_MUST = 1; // 必填
+
+    public static $must = [
+        self::NO_MUST => '非必填',
+        self::IS_MUST => '必填'
+    ];
+
+    /**
+     * 参数类型
+     */
+    public static $para_type = [
+        0 => '字符串', // 'string'
+        1 => '整形', // 'int'
+        2 => '数量类型', // 'number'
+        3 => '数组', // 'array'
+        4 => 'JSON类型', // 'json'
+        5 => '任意类型', // 'any'
+    ];
+
+    /**
      * 请求方式
      */
     const METHOD_OF_ANY = 0;

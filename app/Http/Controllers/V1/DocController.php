@@ -63,24 +63,53 @@ class DocController extends ApiController
      */
     public function store(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'title'     => 'required',
-            'type'      => 'required|in:' . implode(',', array_keys(Document::$type_of_doc)),
-            'method'    => 'in:' . implode(',', array_keys(Document::$type_of_method)),
-            'arguments' => 'json',
-            'content'   => 'required',
-            'cat_id'    => 'required|exists:catalogs,id',
-            'sort'      => 'integer'
+        $validateData = $request->all();
+        if ($request->input('arguments')) {
+            $arguments = json_decode($request->input('arguments'), true);
+            if (json_last_error() != JSON_ERROR_NONE) {
+                return $this->responseError(ApiCode::LACK_OF_PARAMETERS, '请求参数格式不正确');
+            }
+            $validateData = array_merge($request->all(), compact('arguments'));
+        }
+
+        $validate = Validator::make($validateData, [
+            'title'                          => 'required',
+            'type'                           => 'required|in:' . implode(',', array_keys(Document::$type_of_doc)),
+            'method'                         => 'in:' . implode(',', array_keys(Document::$type_of_method)),
+            'arguments'                      => 'array',
+            'arguments.parameters'           => 'array',
+            'arguments.parameters.*.name'    => 'required_with:arguments.parameters|string',
+            'arguments.parameters.*.is_must' => 'required_with:arguments.parameters|in:' . implode(',', array_keys(Document::$must)),
+            'arguments.parameters.*.type'    => 'required_with:arguments.parameters|in:' . implode(',', array_keys(Document::$para_type)),
+            'arguments.parameters.*.remark'  => 'required_with:arguments.parameters|string',
+            'arguments.headers'              => 'array',
+            'arguments.headers.*.name'       => 'required_with:arguments.headers|string',
+            'arguments.headers.*.is_must'    => 'required_with:arguments.headers|in:' . implode(',', array_keys(Document::$must)),
+            'arguments.headers.*.type'       => 'required_with:arguments.headers|in:' . implode(',', array_keys(Document::$para_type)),
+            'arguments.headers.*.remark'     => 'required_with:arguments.headers|string',
+            'content'                        => 'required',
+            'cat_ids'                        => 'required|array',
+            'sort'                           => 'integer'
         ], [
-            'title.required'   => '文档标题必填',
-            'type.required'    => '文档类型必填',
-            'type.in'          => '文档类型的取值范围不正确',
-            'method.in'        => '请求方法的取值范围不正确',
-            'arguments.json'   => '请求参数格式不正确',
-            'content.required' => '内容不能为空',
-            'cat_id.required'  => '文档所属目录必填',
-            'cat_id.exists'    => '文档所属目录不存在',
-            'sort.integer'     => '序号必须为整型'
+            'title.required'                              => '文档标题必填',
+            'type.required'                               => '文档类型必填',
+            'type.in'                                     => '文档类型的取值范围不正确',
+            'method.in'                                   => '请求方法的取值范围不正确',
+            'arguments.array'                             => '请求参数格式不正确',
+            'arguments.parameters.array'                  => '请求参数格式不正确',
+            'arguments.parameters.*.name.required_with'   => '参数名称必填',
+            'arguments.parameters.*.is_must.in'           => '是否必填取值不正确',
+            'arguments.parameters.*.type.in'              => '参数类型取值不正确',
+            'arguments.parameters.*.remark.required_with' => '参数备注必填',
+            'arguments.headers.array'                     => '请求头部格式不正确',
+            'arguments.headers.*.name.required_with'      => '参数名称必填',
+            'arguments.headers.*.is_must.in'              => '是否必填取值不正确',
+            'arguments.headers.*.type.in'                 => '参数类型取值不正确',
+            'arguments.headers.*.remark.required_with'    => '参数备注必填',
+            'content.required'                            => '内容不能为空',
+            'cat_ids.required'                            => '文档所属目录必填',
+            'cat_ids.array'                               => '文档所属目录必须为数组',
+            'sort.integer'                                => '序号必须为整型'
         ], []);
         if ($validate->fails()) {
             return $this->responseError(ApiCode::LACK_OF_PARAMETERS, $validate->errors()->first());
@@ -88,11 +117,13 @@ class DocController extends ApiController
 
         $doc = $this->document->create(
             array_merge(
-                $request->only(['title', 'type', 'method', 'arguments', 'content', 'cat_id']),
+                $request->only(['title', 'type', 'method', 'arguments', 'content']),
                 [
                     'version'    => 1,
                     'created_by' => 1,
-                    'updated_by' => 1
+                    'updated_by' => 1,
+                    'cat_ids'    => implode(',', $request->input('cat_ids', [0])),
+                    'cat_id'     => array_last($request->input('cat_ids', [0]))
                 ]
             )
         );
@@ -133,23 +164,43 @@ class DocController extends ApiController
         }
 
         $validate = Validator::make($request->all(), [
-            'title'     => 'required',
-            'type'      => 'required|in:' . implode(',', array_keys(Document::$type_of_doc)),
-            'method'    => 'in:' . implode(',', array_keys(Document::$type_of_method)),
-            'arguments' => 'json',
-            'content'   => 'required',
-            'cat_id'    => 'required|exists:catalogs,id',
-            'sort'      => 'integer'
+            'title'                          => 'required',
+            'type'                           => 'required|in:' . implode(',', array_keys(Document::$type_of_doc)),
+            'method'                         => 'in:' . implode(',', array_keys(Document::$type_of_method)),
+            'arguments'                      => 'array',
+            'arguments.parameters'           => 'array',
+            'arguments.parameters.*.name'    => 'required_with:arguments.parameters|string',
+            'arguments.parameters.*.is_must' => 'required_with:arguments.parameters|in:' . implode(',', array_keys(Document::$must)),
+            'arguments.parameters.*.type'    => 'required_with:arguments.parameters|in:' . implode(',', array_keys(Document::$para_type)),
+            'arguments.parameters.*.remark'  => 'required_with:arguments.parameters|string',
+            'arguments.headers'              => 'array',
+            'arguments.headers.*.name'       => 'required_with:arguments.headers|string',
+            'arguments.headers.*.is_must'    => 'required_with:arguments.headers|in:' . implode(',', array_keys(Document::$must)),
+            'arguments.headers.*.type'       => 'required_with:arguments.headers|in:' . implode(',', array_keys(Document::$para_type)),
+            'arguments.headers.*.remark'     => 'required_with:arguments.headers|string',
+            'content'                        => 'required',
+            'cat_ids'                        => 'required|array',
+            'sort'                           => 'integer'
         ], [
-            'title.required'   => '文档标题必填',
-            'type.required'    => '文档类型必填',
-            'type.in'          => '文档类型的取值范围不正确',
-            'method.in'        => '请求方法的取值范围不正确',
-            'arguments.json'   => '请求参数格式不正确',
-            'content.required' => '内容不能为空',
-            'cat_id.required'  => '文档所属目录必填',
-            'cat_id.exists'    => '文档所属目录不存在',
-            'sort.integer'     => '序号必须为整型'
+            'title.required'                              => '文档标题必填',
+            'type.required'                               => '文档类型必填',
+            'type.in'                                     => '文档类型的取值范围不正确',
+            'method.in'                                   => '请求方法的取值范围不正确',
+            'arguments.array'                             => '请求参数格式不正确',
+            'arguments.parameters.array'                  => '请求参数格式不正确',
+            'arguments.parameters.*.name.required_with'   => '参数名称必填',
+            'arguments.parameters.*.is_must.in'           => '是否必填取值不正确',
+            'arguments.parameters.*.type.in'              => '参数类型取值不正确',
+            'arguments.parameters.*.remark.required_with' => '参数备注必填',
+            'arguments.headers.array'                     => '请求头部格式不正确',
+            'arguments.headers.*.name.required_with'      => '参数名称必填',
+            'arguments.headers.*.is_must.in'              => '是否必填取值不正确',
+            'arguments.headers.*.type.in'                 => '参数类型取值不正确',
+            'arguments.headers.*.remark.required_with'    => '参数备注必填',
+            'content.required'                            => '内容不能为空',
+            'cat_ids.required'                            => '文档所属目录必填',
+            'cat_ids.array'                               => '文档所属目录必须为数组',
+            'sort.integer'                                => '序号必须为整型'
         ], []);
         if ($validate->fails()) {
             return $this->responseError(ApiCode::LACK_OF_PARAMETERS, $validate->errors()->first());
@@ -157,10 +208,12 @@ class DocController extends ApiController
 
         $this->document->where('id', $id)->update(
             array_merge(
-                $request->only(['title', 'type', 'method', 'arguments', 'content', 'cat_id']),
+                $request->only(['title', 'type', 'method', 'arguments', 'content']),
                 [
                     'version'    => (string)(floatval($document->version) + 0.1),
-                    'updated_by' => 1
+                    'updated_by' => 1,
+                    'cat_ids'    => implode(',', $request->input('cat_ids', [0])),
+                    'cat_id'     => array_last($request->input('cat_ids', [0]))
                 ]
             )
         );

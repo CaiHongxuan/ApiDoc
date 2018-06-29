@@ -31,11 +31,12 @@ class CatController extends ApiController
      */
     public function index(Request $request)
     {
+        if (!$request->has('pro_id')) {
+            return $this->responseError(ApiCode::LACK_OF_PARAMETERS, '缺少所属项目参数');
+        }
         $where = function ($q) use ($request) {
             // 根据项目id刷选
-            if ($request->has('pro_id')) {
-                $q->where('pro_id', $request->input('pro_id'));
-            }
+            $q->where('pro_id', $request->input('pro_id'));
         };
 
         $catalogs = $this->catalog
