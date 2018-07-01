@@ -75,16 +75,17 @@ class DocController extends ApiController
         $validate = Validator::make($validateData, [
             'title'                          => 'required',
             'type'                           => 'required|in:' . implode(',', array_keys(Document::$type_of_doc)),
-            'method'                         => 'in:' . implode(',', array_keys(Document::$type_of_method)),
+            'url'                            => 'string|required_if:type,' . Document::API_DOC,
+            'method'                         => 'in:' . implode(',', array_keys(Document::$type_of_method)) . '|required_if:type,' . Document::API_DOC,
             'arguments'                      => 'array',
             'arguments.parameters'           => 'array',
             'arguments.parameters.*.name'    => 'required_with:arguments.parameters|string',
-            'arguments.parameters.*.is_must' => 'required_with:arguments.parameters|in:' . implode(',', array_keys(Document::$must)),
+            'arguments.parameters.*.is_must' => 'required_with:arguments.parameters|boolean',
             'arguments.parameters.*.type'    => 'required_with:arguments.parameters|in:' . implode(',', array_keys(Document::$para_type)),
             'arguments.parameters.*.remark'  => 'required_with:arguments.parameters|string',
             'arguments.headers'              => 'array',
             'arguments.headers.*.name'       => 'required_with:arguments.headers|string',
-            'arguments.headers.*.is_must'    => 'required_with:arguments.headers|in:' . implode(',', array_keys(Document::$must)),
+            'arguments.headers.*.is_must'    => 'required_with:arguments.headers|boolean',
             'arguments.headers.*.type'       => 'required_with:arguments.headers|in:' . implode(',', array_keys(Document::$para_type)),
             'arguments.headers.*.remark'     => 'required_with:arguments.headers|string',
             'content'                        => 'required',
@@ -94,16 +95,19 @@ class DocController extends ApiController
             'title.required'                              => '文档标题必填',
             'type.required'                               => '文档类型必填',
             'type.in'                                     => '文档类型的取值范围不正确',
+            'url.required_if'                             => '接口地址必填',
+            'url.string'                                  => '接口地址必须为字符串类型',
             'method.in'                                   => '请求方法的取值范围不正确',
+            'method.required_if'                          => '请求方法必填',
             'arguments.array'                             => '请求参数格式不正确',
             'arguments.parameters.array'                  => '请求参数格式不正确',
             'arguments.parameters.*.name.required_with'   => '参数名称必填',
-            'arguments.parameters.*.is_must.in'           => '是否必填取值不正确',
+            'arguments.parameters.*.is_must.boolean'      => '是否必填取值不正确',
             'arguments.parameters.*.type.in'              => '参数类型取值不正确',
             'arguments.parameters.*.remark.required_with' => '参数备注必填',
             'arguments.headers.array'                     => '请求头部格式不正确',
             'arguments.headers.*.name.required_with'      => '参数名称必填',
-            'arguments.headers.*.is_must.in'              => '是否必填取值不正确',
+            'arguments.headers.*.is_must.boolean'         => '是否必填取值不正确',
             'arguments.headers.*.type.in'                 => '参数类型取值不正确',
             'arguments.headers.*.remark.required_with'    => '参数备注必填',
             'content.required'                            => '内容不能为空',
@@ -117,12 +121,13 @@ class DocController extends ApiController
 
         $doc = $this->document->create(
             array_merge(
-                $request->only(['title', 'type', 'method', 'arguments', 'content']),
+                $request->only(['title', 'type', 'url', 'method', 'arguments', 'content']),
                 [
-                    'version'    => 1,
+                    'sort'       => $request->input('sort', 99),
+                    'version'    => '1.0',
                     'created_by' => 1,
                     'updated_by' => 1,
-                    'cat_ids'    => implode(',', $request->input('cat_ids', [0])),
+                    'cat_ids'    => json_encode($request->input('cat_ids', [0])),
                     'cat_id'     => array_last($request->input('cat_ids', [0]))
                 ]
             )
@@ -163,19 +168,29 @@ class DocController extends ApiController
             return $this->responseError(ApiCode::NOT_FOUND_OF_DOCUMENT);
         }
 
-        $validate = Validator::make($request->all(), [
+        $validateData = $request->all();
+        if ($request->input('arguments')) {
+            $arguments = json_decode($request->input('arguments'), true);
+            if (json_last_error() != JSON_ERROR_NONE) {
+                return $this->responseError(ApiCode::LACK_OF_PARAMETERS, '请求参数格式不正确');
+            }
+            $validateData = array_merge($request->all(), compact('arguments'));
+        }
+
+        $validate = Validator::make($validateData, [
             'title'                          => 'required',
             'type'                           => 'required|in:' . implode(',', array_keys(Document::$type_of_doc)),
-            'method'                         => 'in:' . implode(',', array_keys(Document::$type_of_method)),
+            'url'                            => 'string|required_if:type,' . Document::API_DOC,
+            'method'                         => 'in:' . implode(',', array_keys(Document::$type_of_method)) . '|required_if:type,' . Document::API_DOC,
             'arguments'                      => 'array',
             'arguments.parameters'           => 'array',
             'arguments.parameters.*.name'    => 'required_with:arguments.parameters|string',
-            'arguments.parameters.*.is_must' => 'required_with:arguments.parameters|in:' . implode(',', array_keys(Document::$must)),
+            'arguments.parameters.*.is_must' => 'required_with:arguments.parameters|boolean',
             'arguments.parameters.*.type'    => 'required_with:arguments.parameters|in:' . implode(',', array_keys(Document::$para_type)),
             'arguments.parameters.*.remark'  => 'required_with:arguments.parameters|string',
             'arguments.headers'              => 'array',
             'arguments.headers.*.name'       => 'required_with:arguments.headers|string',
-            'arguments.headers.*.is_must'    => 'required_with:arguments.headers|in:' . implode(',', array_keys(Document::$must)),
+            'arguments.headers.*.is_must'    => 'required_with:arguments.headers|boolean',
             'arguments.headers.*.type'       => 'required_with:arguments.headers|in:' . implode(',', array_keys(Document::$para_type)),
             'arguments.headers.*.remark'     => 'required_with:arguments.headers|string',
             'content'                        => 'required',
@@ -185,16 +200,19 @@ class DocController extends ApiController
             'title.required'                              => '文档标题必填',
             'type.required'                               => '文档类型必填',
             'type.in'                                     => '文档类型的取值范围不正确',
+            'url.required_if'                             => '接口地址必填',
+            'url.string'                                  => '接口地址必须为字符串类型',
             'method.in'                                   => '请求方法的取值范围不正确',
+            'method.required_if'                          => '请求方法必填',
             'arguments.array'                             => '请求参数格式不正确',
             'arguments.parameters.array'                  => '请求参数格式不正确',
             'arguments.parameters.*.name.required_with'   => '参数名称必填',
-            'arguments.parameters.*.is_must.in'           => '是否必填取值不正确',
+            'arguments.parameters.*.is_must.boolean'      => '是否必填取值不正确',
             'arguments.parameters.*.type.in'              => '参数类型取值不正确',
             'arguments.parameters.*.remark.required_with' => '参数备注必填',
             'arguments.headers.array'                     => '请求头部格式不正确',
             'arguments.headers.*.name.required_with'      => '参数名称必填',
-            'arguments.headers.*.is_must.in'              => '是否必填取值不正确',
+            'arguments.headers.*.is_must.boolean'         => '是否必填取值不正确',
             'arguments.headers.*.type.in'                 => '参数类型取值不正确',
             'arguments.headers.*.remark.required_with'    => '参数备注必填',
             'content.required'                            => '内容不能为空',
@@ -208,11 +226,12 @@ class DocController extends ApiController
 
         $this->document->where('id', $id)->update(
             array_merge(
-                $request->only(['title', 'type', 'method', 'arguments', 'content']),
+                $request->only(['title', 'type', 'url', 'method', 'arguments', 'content']),
                 [
+                    'sort'       => $request->input('sort', 99),
                     'version'    => (string)(floatval($document->version) + 0.1),
                     'updated_by' => 1,
-                    'cat_ids'    => implode(',', $request->input('cat_ids', [0])),
+                    'cat_ids'    => json_encode($request->input('cat_ids', [0])),
                     'cat_id'     => array_last($request->input('cat_ids', [0]))
                 ]
             )

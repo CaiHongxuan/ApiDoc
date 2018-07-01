@@ -19,6 +19,24 @@ class Catalog extends Model
     ];
 
     /**
+     * 类型转换
+     * @var array
+     */
+    protected $casts = [
+        'id' => 'string'
+    ];
+
+//    /**
+//     * ID属性修改器
+//     * @param $value
+//     * @return string
+//     */
+//    public function getIdAttribute($value)
+//    {
+//        return strval($value);
+//    }
+
+    /**
      * 该目录下的文档
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
