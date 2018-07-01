@@ -39,8 +39,18 @@ class CatController extends ApiController
             $q->where('pro_id', $request->input('pro_id'));
         };
 
+        $with = [];
+        if ($request->has('docs')) {
+            $with = ['docs' => function ($query) {
+                $query
+                    ->select('id', 'title', 'cat_id', 'sort')
+                    ->orderBy('sort');
+            }];
+        }
+
         $catalogs = $this->catalog
             ->where($where)
+            ->with($with)
             ->orderBy('sort', 'ASC')
             ->orderBy('updated_at', 'DESC')
             ->orderBy('id', 'DESC')
