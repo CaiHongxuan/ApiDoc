@@ -86,6 +86,15 @@ class Document extends Model
     ];
 
     /**
+     * 所属项目
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function pro()
+    {
+        return $this->belongsTo(Project::class, 'pro_id', 'id');
+    }
+
+    /**
      * 所属目录
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

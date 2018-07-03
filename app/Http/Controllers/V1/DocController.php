@@ -32,6 +32,10 @@ class DocController extends ApiController
     public function index(Request $request)
     {
         $where = function ($q) use ($request) {
+            // 根据项目id刷选
+            if ($request->has('pro_id')) {
+                $q->where('pro_id', $request->input('pro_id'));
+            }
             // 根据目录id刷选
             if ($request->has('cat_id')) {
                 $q->where('cat_id', $request->input('cat_id'));
@@ -89,6 +93,7 @@ class DocController extends ApiController
             'arguments.headers.*.type'       => 'required_with:arguments.headers|in:' . implode(',', array_keys(Document::$para_type)),
             'arguments.headers.*.remark'     => 'required_with:arguments.headers|string',
             'content'                        => 'required',
+            'pro_id'                         => 'required|exists:projects,id',
             'cat_ids'                        => 'required|array',
             'sort'                           => 'integer'
         ], [
@@ -111,6 +116,8 @@ class DocController extends ApiController
             'arguments.headers.*.type.in'                 => '参数类型取值不正确',
             'arguments.headers.*.remark.required_with'    => '参数备注必填',
             'content.required'                            => '内容不能为空',
+            'pro_id.required'                             => '文档所属项目必填',
+            'pro_id.exists'                               => '文档所属项目不存在',
             'cat_ids.required'                            => '文档所属目录必填',
             'cat_ids.array'                               => '文档所属目录必须为数组',
             'sort.integer'                                => '序号必须为整型'
@@ -121,7 +128,7 @@ class DocController extends ApiController
 
         $doc = $this->document->create(
             array_merge(
-                $request->only(['title', 'type', 'url', 'method', 'arguments', 'content']),
+                $request->only(['title', 'type', 'url', 'method', 'arguments', 'content', 'pro_id']),
                 [
                     'sort'       => $request->input('sort', 99),
                     'version'    => '1.0',
@@ -194,6 +201,7 @@ class DocController extends ApiController
             'arguments.headers.*.type'       => 'required_with:arguments.headers|in:' . implode(',', array_keys(Document::$para_type)),
             'arguments.headers.*.remark'     => 'required_with:arguments.headers|string',
             'content'                        => 'required',
+            'pro_id'                         => 'required|exists:projects,id',
             'cat_ids'                        => 'required|array',
             'sort'                           => 'integer'
         ], [
@@ -216,6 +224,8 @@ class DocController extends ApiController
             'arguments.headers.*.type.in'                 => '参数类型取值不正确',
             'arguments.headers.*.remark.required_with'    => '参数备注必填',
             'content.required'                            => '内容不能为空',
+            'pro_id.required'                             => '文档所属项目必填',
+            'pro_id.exists'                               => '文档所属项目不存在',
             'cat_ids.required'                            => '文档所属目录必填',
             'cat_ids.array'                               => '文档所属目录必须为数组',
             'sort.integer'                                => '序号必须为整型'
@@ -226,7 +236,7 @@ class DocController extends ApiController
 
         $this->document->where('id', $id)->update(
             array_merge(
-                $request->only(['title', 'type', 'url', 'method', 'arguments', 'content']),
+                $request->only(['title', 'type', 'url', 'method', 'arguments', 'content', 'pro_id']),
                 [
                     'sort'       => $request->input('sort', 99),
                     'version'    => (string)(floatval($document->version) + 0.1),

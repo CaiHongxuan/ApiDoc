@@ -27,6 +27,7 @@ class CreateDocumentsTable extends Migration
             $table->tinyInteger('sort')->default(99)->comment('排序');
             $table->unsignedInteger('created_by')->default(0)->comment('文档创建者');
             $table->unsignedInteger('updated_by')->default(0)->comment('文档修改者');
+            $table->unsignedInteger('pro_id')->comment('所属项目id');
             $table->unsignedInteger('cat_id')->comment('所属目录id');
             $table->string('cat_ids')->default('')->comment('所属目录');
             $table->index('created_by');
