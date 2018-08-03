@@ -159,7 +159,11 @@ class DocController extends ApiController
             return $this->responseError(ApiCode::NOT_FOUND_OF_DOCUMENT);
         }
 
-        return $this->responseSuccess($document->toArray());
+        $document = $document->toArray();
+        $document['status_plan'] = Document::$type_of_status[$document['status']];
+        $document['method_plan'] = Document::$type_of_method[$document['method']];
+
+        return $this->responseSuccess($document);
     }
 
     /**
