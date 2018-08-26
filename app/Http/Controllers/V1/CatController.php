@@ -12,6 +12,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\ApiController;
 use App\Lib\Code\ApiCode;
 use App\Model\Catalog;
+use App\Model\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -60,6 +61,14 @@ class CatController extends ApiController
             ->toArray();
 
         $catalogs = list_to_tree($catalogs);
+
+        if ($request->has('docs')) {
+            $docs = (new Document())->getDocs(['cat_id' => 0], ['id', 'title', 'cat_id', 'sort'], 'sort', 1);
+            $catalogs = [
+                'cats' => $catalogs,
+                'docs' => $docs
+            ];
+        }
 
         return $this->responseSuccess($catalogs);
     }

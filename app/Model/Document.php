@@ -121,4 +121,25 @@ class Document extends Model
         return $this->belongsTo(User::class, 'updated_by', 'id');
     }
 
+    /**
+     * 根据条件获取文档列表
+     * @param        $where
+     * @param array  $field
+     * @param string $order_by
+     * @param int    $is_asc
+     * @return mixed
+     */
+    public function getDocs($where, $field=['*'], $order_by='id', $is_asc=1)
+    {
+        $is_asc = $is_asc ? 'ASC' : 'DESC';
+        $docs = $this
+            ->where($where)
+            ->orderBy($order_by, $is_asc)
+            ->orderBy('id', $is_asc)
+            ->get($field)
+            ->toArray();
+
+        return $docs;
+    }
+
 }
