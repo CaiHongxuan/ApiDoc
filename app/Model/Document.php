@@ -44,7 +44,7 @@ class Document extends Model
      */
     public static $para_type = [
         0 => '字符串', // 'string'
-        1 => '整形', // 'int'
+        1 => '整型', // 'int'
         2 => '数量类型', // 'number'
         3 => '数组', // 'array'
         4 => 'JSON类型', // 'json'
