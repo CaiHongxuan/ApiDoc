@@ -86,12 +86,12 @@ class DocController extends ApiController
             'arguments.parameters.*.name'    => 'required_with:arguments.parameters|string',
             'arguments.parameters.*.is_must' => 'required_with:arguments.parameters|boolean',
             'arguments.parameters.*.type'    => 'required_with:arguments.parameters|in:' . implode(',', array_keys(Document::$para_type)),
-            'arguments.parameters.*.remark'  => 'required_with:arguments.parameters|string',
+            'arguments.parameters.*.remark'  => 'string',
             'arguments.headers'              => 'array',
             'arguments.headers.*.name'       => 'required_with:arguments.headers|string',
             'arguments.headers.*.is_must'    => 'required_with:arguments.headers|boolean',
             'arguments.headers.*.type'       => 'required_with:arguments.headers|in:' . implode(',', array_keys(Document::$para_type)),
-            'arguments.headers.*.remark'     => 'required_with:arguments.headers|string',
+            'arguments.headers.*.remark'     => 'string',
             'content'                        => 'required',
             'pro_id'                         => 'required|exists:projects,id',
             'cat_ids'                        => 'required|array',
@@ -160,6 +160,15 @@ class DocController extends ApiController
         }
 
         $document = $document->toArray();
+        $arguments = json_decode(array_get($document, 'arguments', []), true);
+        $document['arguments'] = array_map(function ($item) {
+            return array_map(function ($value) {
+                $result = $value;
+                $result['is_must_plan'] = array_get($value, 'is_must') ? '是' : '否';
+                $result['type_plan'] = array_get(Document::$para_type, array_get($value, 'type'));
+                return $result;
+            }, $item);
+        }, $arguments);
         $document['status_plan'] = Document::$type_of_status[$document['status']];
         $document['method_plan'] = Document::$type_of_method[$document['method']];
 
@@ -198,12 +207,12 @@ class DocController extends ApiController
             'arguments.parameters.*.name'    => 'required_with:arguments.parameters|string',
             'arguments.parameters.*.is_must' => 'required_with:arguments.parameters|boolean',
             'arguments.parameters.*.type'    => 'required_with:arguments.parameters|in:' . implode(',', array_keys(Document::$para_type)),
-            'arguments.parameters.*.remark'  => 'required_with:arguments.parameters|string',
+            'arguments.parameters.*.remark'  => 'string',
             'arguments.headers'              => 'array',
             'arguments.headers.*.name'       => 'required_with:arguments.headers|string',
             'arguments.headers.*.is_must'    => 'required_with:arguments.headers|boolean',
             'arguments.headers.*.type'       => 'required_with:arguments.headers|in:' . implode(',', array_keys(Document::$para_type)),
-            'arguments.headers.*.remark'     => 'required_with:arguments.headers|string',
+            'arguments.headers.*.remark'     => 'string',
             'content'                        => 'required',
             'pro_id'                         => 'required|exists:projects,id',
             'cat_ids'                        => 'required|array',
