@@ -38,14 +38,24 @@ class CatController extends ApiController
         $where = function ($q) use ($request) {
             // 根据项目id刷选
             $q->where('pro_id', $request->input('pro_id'));
+            if ($request->has('docs')) {
+                $q->whereHas('docs', function ($q) use ($request) {
+                    if ($request->input('doc_name')) {
+                        $q->where('title', 'like', '%' . $request->input('doc_name') . '%');
+                    }
+                });
+            }
         };
 
         $with = [];
         if ($request->has('docs')) {
-            $with = ['docs' => function ($query) {
+            $with = ['docs' => function ($query) use ($request)  {
                 $query
                     ->select('id', 'title', 'cat_id', 'sort')
                     ->orderBy('sort');
+                if ($request->input('doc_name')) {
+                    $query->where('title', 'like', '%' . $request->input('doc_name') . '%');
+                }
             }];
         }
 
@@ -63,7 +73,13 @@ class CatController extends ApiController
         $catalogs = list_to_tree($catalogs);
 
         if ($request->has('docs')) {
-            $docs = (new Document())->getDocs(['cat_id' => 0], ['id', 'title', 'cat_id', 'sort'], 'sort', 1);
+            $docs_where = function ($q) use ($request) {
+                $q->where(['cat_id' => 0, 'pro_id' => $request->input('pro_id')]);
+                if ($request->input('doc_name')) {
+                    $q->where('title', 'like', '%' . $request->input('doc_name') . '%');
+                }
+            };
+            $docs = (new Document())->getDocs($docs_where, ['id', 'title', 'cat_id', 'sort'], 'sort', 1);
             $catalogs = [
                 'cats' => $catalogs,
                 'docs' => $docs
