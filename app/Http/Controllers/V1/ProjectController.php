@@ -27,10 +27,24 @@ class ProjectController extends ApiController
 
     /**
      * 项目列表
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        $projects = $this->project->orderBy('sort', 'ASC')->orderBy('updated_at', 'DESC')->orderBy('id', 'DESC')->paginate($this->pageNum);
+        $where = function ($query) use ($request) {
+            if ($request->input('q')) {
+                $query->where('name', 'like', '%' . $request->input('q') . '%')
+                    ->orWhere('desc', 'like', '%' . $request->input('q') . '%');
+            }
+        };
+
+        $projects = $this->project
+            ->where($where)
+            ->orderBy('sort', 'ASC')
+            ->orderBy('updated_at', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->paginate($this->pageNum);
 
         return $this->responseSuccess($projects);
     }
