@@ -40,6 +40,10 @@ class DocController extends ApiController
             if ($request->has('cat_id')) {
                 $q->where('cat_id', $request->input('cat_id'));
             }
+            // 根据文档名称筛选
+            if ($request->input('doc_name')) {
+                $q->where('title', 'like', '%' . $request->input('doc_name') . '%');
+            }
         };
 
         $documents = $this->document
