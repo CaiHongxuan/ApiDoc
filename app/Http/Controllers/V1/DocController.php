@@ -158,6 +158,9 @@ class DocController extends ApiController
             ->with(['created_by' => function ($q) {
                 $q->select('id', 'name');
             }])
+            ->with(['updated_by' => function ($q) {
+                $q->select('id', 'name');
+            }])
             ->find($id);
         if (!$document) {
             return $this->responseError(ApiCode::NOT_FOUND_OF_DOCUMENT);
