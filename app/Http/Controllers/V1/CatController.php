@@ -63,7 +63,7 @@ class CatController extends ApiController
             ->orderBy('sort', 'ASC')
             ->orderBy('id', 'ASC')
             ->get([
-                'id', 'name', 'parent_id', 'parent_ids', 'sort'
+                'id', 'name', 'parent_id', 'parent_ids', 'sort', 'created_at'
             ])
             ->toArray();
 
