@@ -38,11 +38,9 @@ class CatController extends ApiController
         $where = function ($q) use ($request) {
             // 根据项目id刷选
             $q->where('pro_id', $request->input('pro_id'));
-            if ($request->has('docs')) {
+            if ($request->has('docs') && $request->input('doc_name')) {
                 $q->whereHas('docs', function ($q) use ($request) {
-                    if ($request->input('doc_name')) {
-                        $q->where('title', 'like', '%' . $request->input('doc_name') . '%');
-                    }
+                    $q->where('title', 'like', '%' . $request->input('doc_name') . '%');
                 });
             }
         };
@@ -63,8 +61,7 @@ class CatController extends ApiController
             ->where($where)
             ->with($with)
             ->orderBy('sort', 'ASC')
-            ->orderBy('updated_at', 'DESC')
-            ->orderBy('id', 'DESC')
+            ->orderBy('id', 'ASC')
             ->get([
                 'id', 'name', 'parent_id', 'parent_ids', 'sort'
             ])
