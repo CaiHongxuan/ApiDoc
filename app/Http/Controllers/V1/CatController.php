@@ -111,7 +111,7 @@ class CatController extends ApiController
 
         $catalog = $this->catalog->create(
             array_merge(
-                $request->only(['name', 'pro_id']),
+                $request->only(['name', 'pro_id', 'sort']),
                 [
                     'parent_ids' => implode(',', $request->input('parent_ids', [0])),
                     'parent_id' => array_last($request->input('parent_ids', [0]))
@@ -169,7 +169,7 @@ class CatController extends ApiController
 
         $this->catalog->where('id', $id)->update(
             array_merge(
-                $request->only(['name', 'pro_id']),
+                $request->only(['name', 'pro_id', 'sort']),
                 [
                     'parent_ids' => implode(',', $request->input('parent_ids', [0])),
                     'parent_id' => array_last($request->input('parent_ids', [0]))
