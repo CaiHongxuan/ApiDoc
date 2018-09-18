@@ -187,8 +187,17 @@ class CatController extends ApiController
      */
     public function destroy($id)
     {
-        if (!$this->catalog->find($id)) {
+        $catalog = $this->catalog->find($id);
+        if (!$catalog) {
             return $this->responseError(ApiCode::NOT_FOUND_OF_CATALOG);
+        }
+        // 该目录下存在子目录不能够删除
+        if (!$this->catalog->where('parent_id', $id)->get()->isEmpty()) {
+            return $this->responseError(ApiCode::DELETE_ERROR_EXIST_CAT);
+        }
+        // 该目录下存在文档不能够删除
+        if (!$this->catalog->where('id', $id)->has('docs')->get()->isEmpty()) {
+            return $this->responseError(ApiCode::DELETE_ERROR_EXIST_DOC);
         }
 
         $this->catalog->where('id', $id)->delete();
