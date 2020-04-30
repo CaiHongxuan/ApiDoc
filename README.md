@@ -1,6 +1,6 @@
 # ApiDoc
 
-采用Lumen框架实现的集API文档编写、调试功能于一体的项目文档管理平台。支持markdown语法
+采用Lumen框架实现API文档编写的项目文档管理平台。支持markdown语法
 
 # Lumen PHP Framework
 
